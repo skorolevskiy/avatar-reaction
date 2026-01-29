@@ -219,7 +219,7 @@ function App() {
       <div className="max-w-4xl mx-auto space-y-6">
         <header className="flex justify-between items-center mb-4 sm:mb-8 bg-white p-3 sm:p-6 rounded-xl shadow-sm">
           <div>
-             <h1 className="text-m sm:text-3xl font-bold text-gray-900 tracking-tight">AI Video Studio</h1>
+             <h1 className="text-m sm:text-3xl font-bold text-gray-900 tracking-tight">Avatar Reaction</h1>
           </div>
           <button onClick={resetAll} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 hover:bg-gray-50 rounded-lg">
             <RefreshCw className="w-5 h-5" />
