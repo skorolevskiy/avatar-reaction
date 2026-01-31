@@ -9,6 +9,7 @@ export interface Reference {
   id: string;
   name: string;
   label?: string;
+  duration?: string;
   preview_url: string; // Video or image preview of the motion
   thumbnail_url?: string;
 }
@@ -25,6 +26,7 @@ export interface Background {
   id: string;
   name: string;
   title?: string;
+  duration?: string;
   video_url: string;
   preview_url?: string;
 }

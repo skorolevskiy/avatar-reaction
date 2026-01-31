@@ -59,8 +59,8 @@ function App() {
   const mockData = () => {
       setAvatars([{ id: '1', name: 'Anna', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop' }]);
       // Placeholder thumbnail added for testing UI
-      setReferences([{ id: '1', name: 'Wave', label: 'Wave Hello', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
-      setBackgrounds([{ id: '1', name: 'Office', title: 'Modern Office', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]);
+      setReferences([{ id: '1', name: 'Wave', label: 'Wave Hello', duration: '5s', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
+      setBackgrounds([{ id: '1', name: 'Office', title: 'Modern Office', duration: '15s', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]);
   };
 
   const handleError = (msg: string) => {
@@ -216,9 +216,9 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-8 font-sans">
+    <div className="min-h-screen bg-gray-100 p-2 sm:p-4 font-sans">
       <div className="max-w-4xl mx-auto space-y-6">
-        <header className="flex justify-between items-center mb-4 sm:mb-8 bg-white p-3 sm:p-6 rounded-xl shadow-sm">
+        <header className="flex justify-between items-center mb-4 sm:mb-8 bg-white p-2 sm:p-4 rounded-xl shadow-sm">
           <div>
              <h1 className="text-m sm:text-3xl font-bold text-gray-900 tracking-tight">Avatar Reaction</h1>
           </div>
@@ -246,7 +246,7 @@ function App() {
             onToggle={() => handleStepClick('avatar')}
             >
             {avatars.length === 0 ? <Loader type="spinner" /> : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                     {avatars.map(avatar => (
                     <Card
                         key={avatar.id}
@@ -271,19 +271,18 @@ function App() {
             onToggle={() => handleStepClick('reference')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                     {references.map(ref => (
-                    <div key={ref.id} className="space-y-1">
                       <Card
+                          key={ref.id}
                           title={ref.label || ref.name}
                           video={ref.preview_url}
                           image={ref.thumbnail_url}
                           selected={state.selectedReference?.id === ref.id}
                           aspect="aspect-square"
+                          duration={ref.duration}
                           onClick={() => setState(prev => ({ ...prev, selectedReference: ref }))}
                       />
-                      {/* <p className="text-sm font-medium text-center text-gray-700 truncate">{ref.label || ref.name}</p> */}
-                    </div>
                     ))}
                 </div>
                 <div className="flex justify-end pt-4 border-t">
@@ -334,18 +333,17 @@ function App() {
             onToggle={() => handleStepClick('background')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                 {backgrounds.map(bg => (
-                    <div key={bg.id} className="space-y-1">
                       <Card
+                      key={bg.id}
                       title={bg.title || bg.name}
                       video={bg.video_url}
                       selected={state.selectedBackground?.id === bg.id}
                       aspect="aspect-[9/16]"
+                      duration={bg.duration}
                       onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
                       />
-                      {/* <p className="text-sm font-medium text-center text-gray-700 truncate">{bg.title || bg.name}</p> */}
-                    </div>
                 ))}
                 </div>
                 <div className="flex justify-end pt-4 border-t">

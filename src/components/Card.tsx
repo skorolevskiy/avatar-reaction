@@ -8,9 +8,10 @@ interface CardProps {
   selected: boolean;
   onClick: () => void;
   aspect?: string;
+  duration?: string;
 }
 
-export function Card({ image, video, title, selected, onClick, aspect = 'aspect-[3/4]' }: CardProps) {
+export function Card({ image, video, title, selected, onClick, aspect = 'aspect-[3/4]', duration }: CardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleMouseEnter = () => {
@@ -57,7 +58,15 @@ export function Card({ image, video, title, selected, onClick, aspect = 'aspect-
         )
       )}
       
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+      <div className="w-full flex items-center justify-between gap-2">
+            <p className="text-white font-medium truncate">{title}</p>
+            {duration && (
+                <span className="text-xs text-white/90 bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm whitespace-nowrap">
+                    {duration}
+                </span>
+            )}
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
         <p className="text-white font-medium truncate w-full">{title}</p>
       </div>
 
