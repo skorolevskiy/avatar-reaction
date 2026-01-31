@@ -12,13 +12,22 @@ import type {
 import { Step } from './components/Step';
 import { Card } from './components/Card';
 import { Loader } from './components/Loader';
-import { AlertCircle, RefreshCw, Download, Share2 } from 'lucide-react';
+import { AlertCircle, RefreshCw, Download, Share2, Plus, LayoutGrid, Wand2 } from 'lucide-react';
+import { AvatarUploadModal } from './components/modals/AvatarUploadModal';
+import { ReferenceUploadModal } from './components/modals/ReferenceUploadModal';
+import { BackgroundUploadModal } from './components/modals/BackgroundUploadModal';
+import { Gallery } from './components/Gallery';
 
 function App() {
+  const [view, setView] = useState<'wizard' | 'gallery'>('wizard');
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [references, setReferences] = useState<Reference[]>([]);
   const [backgrounds, setBackgrounds] = useState<Background[]>([]);
   
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isRefUploadModalOpen, setIsRefUploadModalOpen] = useState(false);
+  const [isBgUploadModalOpen, setIsBgUploadModalOpen] = useState(false);
+
   const [state, setState] = useState<AppState>({
     currentStep: 'avatar',
     expandedStep: 'avatar',
@@ -33,10 +42,6 @@ function App() {
 
   const pollingRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    loadInitialData();
-    return () => stopPolling();
-  }, []);
 
   const loadInitialData = async () => {
     try {
@@ -85,6 +90,37 @@ function App() {
     // They can visit future steps only if they are the current active step.
     if (clickedIndex <= reachedIndex) {
       setState(prev => ({ ...prev, expandedStep: step }));
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    try {
+      const newAvatar: Avatar = await api.uploadAvatar(file);
+      setAvatars(prev => [newAvatar, ...prev]);
+      setIsUploadModalOpen(false);
+      selectAvatar(newAvatar);
+    } catch (err) {
+      handleError('Failed to upload avatar');
+    }
+  };
+
+  const handleReferenceUpload = async (file: File, label: string) => {
+    try {
+      const newRef: Reference = await api.uploadReference(file, label);
+      setReferences(prev => [newRef, ...prev]);
+      setIsRefUploadModalOpen(false);
+    } catch (err) {
+      handleError('Failed to upload reference video');
+    }
+  };
+
+  const handleBackgroundUpload = async (file: File, title: string) => {
+    try {
+      const newBg: Background = await api.uploadBackground(file, title);
+      setBackgrounds(prev => [newBg, ...prev]);
+      setIsBgUploadModalOpen(false);
+    } catch (err) {
+      handleError('Failed to upload background video');
     }
   };
 
@@ -215,19 +251,46 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    loadInitialData();
+    return () => stopPolling();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 p-2 sm:p-4 font-sans">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <header className="flex justify-between items-center mb-4 sm:mb-8 bg-white p-2 sm:p-4 rounded-xl shadow-sm">
+      <div className={`${view === 'gallery' ? 'max-w-7xl' : 'max-w-4xl'} mx-auto space-y-6`}>
+        <header className="flex flex-row justify-between items-center mb-4 sm:mb-8 bg-white p-2 sm:p-4 rounded-xl shadow-sm gap-4">
           <div>
-             <h1 className="text-m sm:text-3xl font-bold text-gray-900 tracking-tight">Avatar Reaction</h1>
+             <h1 className="text-xl sm:text-3xl font-bold text-gray-900 tracking-tight">Avatar Reaction</h1>
           </div>
-          <button onClick={resetAll} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 hover:bg-gray-50 rounded-lg">
+          
+          <div className="flex bg-gray-100 p-1 rounded-lg">
+            <button 
+                onClick={() => setView('wizard')} 
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${view === 'wizard' ? 'bg-white shadow text-blue-700' : 'text-gray-600 hover:text-gray-900'}`}
+            >
+                <Wand2 className="w-4 h-4" /> 
+                <span className="hidden sm:inline">Create</span>
+            </button>
+            <button 
+                onClick={() => setView('gallery')} 
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${view === 'gallery' ? 'bg-white shadow text-blue-700' : 'text-gray-600 hover:text-gray-900'}`}
+            >
+                <LayoutGrid className="w-4 h-4" /> 
+                <span className="hidden sm:inline">Gallery</span>
+            </button>
+          </div>
+
+          <button onClick={resetAll} className={`flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 hover:bg-gray-50 rounded-lg ${view === 'gallery' ? 'invisible' : ''}`}>
             <RefreshCw className="w-5 h-5" />
-            <span className="hidden sm:inline">New</span>
+            <span className="hidden sm:inline">New Project</span>
           </button>
         </header>
 
+        {view === 'gallery' ? (
+           <Gallery />
+        ) : (
+           <>
         {state.error && (
            <div className="animate-in fade-in bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative mb-6 flex items-center gap-3 shadow-sm" role="alert">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -247,6 +310,15 @@ function App() {
             >
             {avatars.length === 0 ? <Loader type="spinner" /> : (
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                    <button
+                        onClick={() => setIsUploadModalOpen(true)}
+                        className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Plus className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Add New</span>
+                    </button>
                     {avatars.map(avatar => (
                     <Card
                         key={avatar.id}
@@ -272,6 +344,15 @@ function App() {
             >
             <div className="space-y-6">
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                    <button
+                        onClick={() => setIsRefUploadModalOpen(true)}
+                        className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Plus className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Add New</span>
+                    </button>
                     {references.map(ref => (
                       <Card
                           key={ref.id}
@@ -334,6 +415,15 @@ function App() {
             >
             <div className="space-y-6">
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                  <button
+                        onClick={() => setIsBgUploadModalOpen(true)}
+                        className="aspect-[9/16] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Plus className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Add New</span>
+                    </button>
                 {backgrounds.map(bg => (
                       <Card
                       key={bg.id}
@@ -417,7 +507,27 @@ function App() {
             )}
             </Step>
         </div>
+        </>
+      )}
       </div>
+      
+      <AvatarUploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+        onUpload={handleAvatarUpload}
+      />
+
+      <ReferenceUploadModal
+        isOpen={isRefUploadModalOpen}
+        onClose={() => setIsRefUploadModalOpen(false)}
+        onUpload={handleReferenceUpload}
+      />
+
+      <BackgroundUploadModal
+        isOpen={isBgUploadModalOpen}
+        onClose={() => setIsBgUploadModalOpen(false)}
+        onUpload={handleBackgroundUpload}
+      />
     </div>
   );
 }
