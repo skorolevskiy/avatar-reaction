@@ -334,7 +334,9 @@ function App() {
             onToggle={() => handleStepClick('background')}
             >
             <div className="space-y-6">
-                <div div key={bg.id} className="space-y-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {backgrounds.map(bg => (
+                    <div key={bg.id} className="space-y-1">
                       <Card
                       title={bg.title || bg.name}
                       video={bg.video_url}
@@ -343,9 +345,7 @@ function App() {
                       onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
                       />
                       <p className="text-sm font-medium text-center text-gray-700 truncate">{bg.title || bg.name}</p>
-                    </divspect="aspect-[9/16]"
-                    onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
-                    />
+                    </div>
                 ))}
                 </div>
                 <div className="flex justify-end pt-4 border-t">
