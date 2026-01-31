@@ -282,7 +282,7 @@ function App() {
                           aspect="aspect-square"
                           onClick={() => setState(prev => ({ ...prev, selectedReference: ref }))}
                       />
-                      <p className="text-sm font-medium text-center text-gray-700 truncate">{ref.label || ref.name}</p>
+                      {/* <p className="text-sm font-medium text-center text-gray-700 truncate">{ref.label || ref.name}</p> */}
                     </div>
                     ))}
                 </div>
@@ -344,7 +344,7 @@ function App() {
                       aspect="aspect-[9/16]"
                       onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
                       />
-                      <p className="text-sm font-medium text-center text-gray-700 truncate">{bg.title || bg.name}</p>
+                      {/* <p className="text-sm font-medium text-center text-gray-700 truncate">{bg.title || bg.name}</p> */}
                     </div>
                 ))}
                 </div>
