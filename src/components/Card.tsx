@@ -41,6 +41,7 @@ export function Card({ image, video, title, selected, onClick, aspect = 'aspect-
          <video
             ref={videoRef}
             src={video}
+            poster={image}
             className="w-full h-full object-cover"
             loop
             muted

@@ -9,6 +9,7 @@ export interface Reference {
   id: string;
   name: string;
   preview_url: string; // Video or image preview of the motion
+  thumbnail_url?: string;
 }
 
 export interface Motion {

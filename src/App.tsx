@@ -58,7 +58,8 @@ function App() {
   
   const mockData = () => {
       setAvatars([{ id: '1', name: 'Anna', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop' }]);
-      setReferences([{ id: '1', name: 'Wave', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]); // Placeholder video
+      // Placeholder thumbnail added for testing UI
+      setReferences([{ id: '1', name: 'Wave', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
       setBackgrounds([{ id: '1', name: 'Office', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]);
   };
 
@@ -223,7 +224,7 @@ function App() {
           </div>
           <button onClick={resetAll} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 hover:bg-gray-50 rounded-lg">
             <RefreshCw className="w-5 h-5" />
-            <span className="hidden sm:inline">Start Over</span>
+            <span className="hidden sm:inline">New</span>
           </button>
         </header>
 
@@ -252,6 +253,7 @@ function App() {
                         title={avatar.name}
                         image={avatar.image_url}
                         selected={state.selectedAvatar?.id === avatar.id}
+                        aspect="aspect-square"
                         onClick={() => selectAvatar(avatar)}
                     />
                     ))}
@@ -275,8 +277,9 @@ function App() {
                         key={ref.id}
                         title={ref.name}
                         video={ref.preview_url}
+                        image={ref.thumbnail_url}
                         selected={state.selectedReference?.id === ref.id}
-                        aspect="aspect-video"
+                        aspect="aspect-square"
                         onClick={() => setState(prev => ({ ...prev, selectedReference: ref }))}
                     />
                     ))}
@@ -305,7 +308,7 @@ function App() {
             {state.isLoading && !state.motionTask?.motion_video_url ? (
                 <Loader type="pulse" text="Generating motion (this may take 1-10 mins)..." />
             ) : state.motionTask?.motion_video_url ? (
-                <div className="aspect-video w-full bg-black rounded-lg overflow-hidden shadow-inner">
+                <div className="aspect-square w-full bg-black rounded-lg overflow-hidden shadow-inner">
                 <video 
                     src={state.motionTask.motion_video_url} 
                     controls 
@@ -336,7 +339,7 @@ function App() {
                     title={bg.name}
                     video={bg.video_url}
                     selected={state.selectedBackground?.id === bg.id}
-                    aspect="aspect-video"
+                    aspect="aspect-[9/16]"
                     onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
                     />
                 ))}
@@ -368,7 +371,7 @@ function App() {
                 </div>
             ) : state.montageTask?.final_video_url ? (
                 <div className="space-y-6">
-                    <div className="aspect-video w-full bg-black rounded-xl overflow-hidden relative shadow-2xl ring-4 ring-white">
+                    <div className="aspect-[9/16] w-full bg-black rounded-xl overflow-hidden relative shadow-2xl ring-4 ring-white">
                     <video 
                         src={state.montageTask.final_video_url} 
                         controls 
