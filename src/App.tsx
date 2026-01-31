@@ -308,7 +308,7 @@ function App() {
             {state.isLoading && !state.motionTask?.motion_video_url ? (
                 <Loader type="pulse" text="Generating motion (this may take 1-10 mins)..." />
             ) : state.motionTask?.motion_video_url ? (
-                <div className="aspect-square w-full bg-black rounded-lg overflow-hidden shadow-inner">
+                <div className="aspect-square w-full max-w-[300px] mx-auto bg-black rounded-lg overflow-hidden shadow-inner">
                 <video 
                     src={state.motionTask.motion_video_url} 
                     controls 
@@ -371,7 +371,7 @@ function App() {
                 </div>
             ) : state.montageTask?.final_video_url ? (
                 <div className="space-y-6">
-                    <div className="aspect-[9/16] w-full bg-black rounded-xl overflow-hidden relative shadow-2xl ring-4 ring-white">
+                    <div className="aspect-[9/16] w-full max-w-[300px] mx-auto bg-black rounded-xl overflow-hidden relative shadow-2xl ring-4 ring-white">
                     <video 
                         src={state.montageTask.final_video_url} 
                         controls 
