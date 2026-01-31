@@ -59,8 +59,8 @@ function App() {
   const mockData = () => {
       setAvatars([{ id: '1', name: 'Anna', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop' }]);
       // Placeholder thumbnail added for testing UI
-      setReferences([{ id: '1', name: 'Wave', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
-      setBackgrounds([{ id: '1', name: 'Office', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]);
+      setReferences([{ id: '1', name: 'Wave', label: 'Wave Hello', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
+      setBackgrounds([{ id: '1', name: 'Office', title: 'Modern Office', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]);
   };
 
   const handleError = (msg: string) => {
@@ -273,15 +273,17 @@ function App() {
             <div className="space-y-6">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {references.map(ref => (
-                    <Card
-                        key={ref.id}
-                        title={ref.name}
-                        video={ref.preview_url}
-                        image={ref.thumbnail_url}
-                        selected={state.selectedReference?.id === ref.id}
-                        aspect="aspect-square"
-                        onClick={() => setState(prev => ({ ...prev, selectedReference: ref }))}
-                    />
+                    <div key={ref.id} className="space-y-1">
+                      <Card
+                          title={ref.label || ref.name}
+                          video={ref.preview_url}
+                          image={ref.thumbnail_url}
+                          selected={state.selectedReference?.id === ref.id}
+                          aspect="aspect-square"
+                          onClick={() => setState(prev => ({ ...prev, selectedReference: ref }))}
+                      />
+                      <p className="text-sm font-medium text-center text-gray-700 truncate">{ref.label || ref.name}</p>
+                    </div>
                     ))}
                 </div>
                 <div className="flex justify-end pt-4 border-t">
@@ -332,14 +334,16 @@ function App() {
             onToggle={() => handleStepClick('background')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {backgrounds.map(bg => (
-                    <Card
-                    key={bg.id}
-                    title={bg.name}
-                    video={bg.video_url}
-                    selected={state.selectedBackground?.id === bg.id}
-                    aspect="aspect-[9/16]"
+                <div div key={bg.id} className="space-y-1">
+                      <Card
+                      title={bg.title || bg.name}
+                      video={bg.video_url}
+                      selected={state.selectedBackground?.id === bg.id}
+                      aspect="aspect-[9/16]"
+                      onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
+                      />
+                      <p className="text-sm font-medium text-center text-gray-700 truncate">{bg.title || bg.name}</p>
+                    </divspect="aspect-[9/16]"
                     onClick={() => setState(prev => ({ ...prev, selectedBackground: bg }))}
                     />
                 ))}

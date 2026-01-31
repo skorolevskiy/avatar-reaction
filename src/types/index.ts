@@ -8,6 +8,7 @@ export interface Avatar {
 export interface Reference {
   id: string;
   name: string;
+  label?: string;
   preview_url: string; // Video or image preview of the motion
   thumbnail_url?: string;
 }
@@ -23,6 +24,7 @@ export interface Motion {
 export interface Background {
   id: string;
   name: string;
+  title?: string;
   video_url: string;
   preview_url?: string;
 }
