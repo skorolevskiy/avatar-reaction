@@ -65,7 +65,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
               </div>
               <div className="text-center">
                 <p className="font-medium text-gray-900">Click to upload</p>
-                <p className="text-sm text-gray-500">PNG or JPG (max 5MB)</p>
+                <p className="text-sm text-gray-500">PNG or JPG (max 20MB)</p>
               </div>
               <input 
                 ref={fileInputRef}
