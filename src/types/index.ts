@@ -10,7 +10,7 @@ export interface Reference {
   name: string;
   label?: string;
   duration?: string;
-  preview_url: string; // Video or image preview of the motion
+  video_url: string; // Video or image preview of the motion
   thumbnail_url?: string;
 }
 
@@ -18,6 +18,7 @@ export interface Motion {
   id: string;
   status: 'queued' | 'processing' | 'success' | 'failed';
   motion_video_url?: string;
+  motion_thumbnail_url?: string;
   avatar_id: string;
   reference_id: string;
 }
@@ -28,7 +29,7 @@ export interface Background {
   title?: string;
   duration?: string;
   video_url: string;
-  preview_url?: string;
+  thumbnail_url?: string;
 }
 
 export interface Montage {
@@ -36,6 +37,7 @@ export interface Montage {
   status: 'queued' | 'processing' | 'ready' | 'failed';
   video_url?: string;
   final_video_url?: string;
+  final_thumbnail_url?: string;
   motion_id: string;
   bg_video_id: string;
 }

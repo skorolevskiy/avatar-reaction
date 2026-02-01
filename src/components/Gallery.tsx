@@ -4,6 +4,7 @@ import type { Avatar, Reference, Motion, Background, Montage } from '../types';
 import { Card } from './Card';
 import { Loader } from './Loader';
 import { RefreshCw, Play, Video, ImageIcon, Layers, FileVideo } from 'lucide-react';
+import { MediaPreviewModal } from './modals/MediaPreviewModal';
 
 type Tab = 'avatars' | 'references' | 'motions' | 'backgrounds' | 'montages';
 
@@ -16,6 +17,12 @@ export function Gallery() {
   const [motions, setMotions] = useState<Motion[]>([]);
   const [backgrounds, setBackgrounds] = useState<Background[]>([]);
   const [montages, setMontages] = useState<Montage[]>([]);
+
+  const [previewItem, setPreviewItem] = useState<{
+    url: string;
+    type: 'image' | 'video';
+    title: string;
+  } | null>(null);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -99,7 +106,11 @@ export function Gallery() {
                 image={item.image_url}
                 selected={false}
                 aspect='aspect-square'
-                onClick={() => {}}
+                onClick={() => setPreviewItem({
+                  url: item.image_url,
+                  type: 'image',
+                  title: item.name
+                })}
               />
             ))}
             {avatars.length === 0 && <EmptyState />}
@@ -112,10 +123,13 @@ export function Gallery() {
               <Card
                 key={item.id}
                 title={item.label || item.name}
-                video={item.preview_url}
                 image={item.thumbnail_url}
                 selected={false}
-                onClick={() => {}}
+                onClick={() => setPreviewItem({
+                  url: item.video_url,
+                  type: 'video',
+                  title: item.label || item.name
+                })}
                 aspect="aspect-square"
                 duration={item.duration}
               />
@@ -131,10 +145,14 @@ export function Gallery() {
                  {item.status === 'success' && item.motion_video_url ? (
                     <Card
                         title={`Motion ${item.id.slice(0, 8)}`}
-                        video={item.motion_video_url}
+                        image={item.motion_thumbnail_url}
                         selected={false}
                         aspect="aspect-square"
-                        onClick={() => {}}
+                        onClick={() => setPreviewItem({
+                          url: item.motion_video_url!,
+                          type: 'video',
+                          title: `Motion ${item.id.slice(0, 8)}`
+                        })}
                     />
                  ) : (
                     <ProcessingCard status={item.status} title={`Motion ${item.id.slice(0, 8)}`} />
@@ -151,9 +169,13 @@ export function Gallery() {
               <Card
                 key={item.id}
                 title={item.title || item.name}
-                video={item.video_url}
+                image={item.thumbnail_url}
                 selected={false}
-                onClick={() => {}}
+                onClick={() => setPreviewItem({
+                  url: item.video_url,
+                  type: 'video',
+                  title: item.title || item.name
+                })}
                 aspect="aspect-[9/16]"
                 duration={item.duration}
               />
@@ -169,9 +191,13 @@ export function Gallery() {
                 {(item.status === 'ready' || item.status === 'success' as any) && (item.final_video_url || item.video_url) ? (
                     <Card
                         title={`Montage ${item.id.slice(0, 8)}`}
-                        video={item.final_video_url || item.video_url}
+                        image={item.final_thumbnail_url}
                         selected={false}
-                        onClick={() => {}}
+                        onClick={() => setPreviewItem({
+                          url: item.final_video_url || item.video_url!,
+                          type: 'video',
+                          title: `Montage ${item.id.slice(0, 8)}`
+                        })}
                         aspect="aspect-[9/16]"
                     />
                  ) : (
@@ -183,6 +209,14 @@ export function Gallery() {
           </div>
         )}
       </div>
+
+      {previewItem && (
+        <MediaPreviewModal
+          isOpen={!!previewItem}
+          onClose={() => setPreviewItem(null)}
+          {...previewItem}
+        />
+      )}
     </div>
   );
 }

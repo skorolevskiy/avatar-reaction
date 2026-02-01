@@ -128,8 +128,6 @@ function App() {
     setState(prev => ({ 
       ...prev, 
       selectedAvatar: avatar,
-      currentStep: prev.currentStep === 'avatar' ? 'reference' : prev.currentStep, // Advance if on first step
-      expandedStep: 'reference' 
     }));
   };
 
@@ -170,8 +168,6 @@ function App() {
               ...prev, 
               motionTask: status, 
               isLoading: false,
-              currentStep: 'background',
-              expandedStep: 'background'
             }));
           } else if (status.status === 'failed') {
             stopPolling();
@@ -218,8 +214,6 @@ function App() {
               ...prev, 
               montageTask: status, 
               isLoading: false,
-              currentStep: 'result',
-              expandedStep: 'result'
             }));
           } else if (status.status === 'failed') {
             stopPolling();
@@ -258,7 +252,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-2 sm:p-4 font-sans">
-      <div className={`${view === 'gallery' ? 'max-w-7xl' : 'max-w-4xl'} mx-auto space-y-6`}>
+      <div className={`${view === 'gallery' ? 'max-w-7xl' : 'max-w-7xl'} mx-auto space-y-6`}>
         <header className="flex flex-row justify-between items-center mb-4 sm:mb-8 bg-white p-2 sm:p-4 rounded-xl shadow-sm gap-4">
           <div>
              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 tracking-tight">Avatar Reaction</h1>
@@ -309,7 +303,7 @@ function App() {
             onToggle={() => handleStepClick('avatar')}
             >
             {avatars.length === 0 ? <Loader type="spinner" /> : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                     <button
                         onClick={() => setIsUploadModalOpen(true)}
                         className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
@@ -331,6 +325,15 @@ function App() {
                     ))}
                 </div>
             )}
+            <div className="flex justify-end pt-4 border-t mt-4">
+                <button 
+                    onClick={() => setState(prev => ({ ...prev, currentStep: 'reference', expandedStep: 'reference' }))}
+                    disabled={!state.selectedAvatar}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Next
+                </button>
+            </div>
             </Step>
 
             {/* Step 2: Reference Selection */}
@@ -343,7 +346,7 @@ function App() {
             onToggle={() => handleStepClick('reference')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                     <button
                         onClick={() => setIsRefUploadModalOpen(true)}
                         className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
@@ -357,7 +360,7 @@ function App() {
                       <Card
                           key={ref.id}
                           title={ref.label || ref.name}
-                          video={ref.preview_url}
+                          video={ref.video_url}
                           image={ref.thumbnail_url}
                           selected={state.selectedReference?.id === ref.id}
                           aspect="aspect-square"
@@ -368,11 +371,11 @@ function App() {
                 </div>
                 <div className="flex justify-end pt-4 border-t">
                     <button 
-                        onClick={startMotionGeneration}
-                        disabled={!state.selectedReference || state.isLoading}
-                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0"
+                        onClick={() => setState(prev => ({ ...prev, currentStep: 'motion_generation', expandedStep: 'motion_generation' }))}
+                        disabled={!state.selectedReference}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Generate Motion
+                        Next
                     </button>
                 </div>
             </div>
@@ -387,15 +390,67 @@ function App() {
             isDisabled={!state.motionTask && state.currentStep !== 'motion_generation'}
             onToggle={() => handleStepClick('motion_generation')}
             >
-            {state.isLoading && !state.motionTask?.motion_video_url ? (
+            {!state.motionTask && !state.isLoading ? (
+               <div className="space-y-6">
+                 <div className="flex flex-col sm:flex-row gap-8 items-center justify-center p-4">
+                    {/* Avatar Preview */}
+                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                        <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Avatar</p>
+                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                           {state.selectedAvatar ? (
+                             <img src={state.selectedAvatar.image_url} className="w-full h-full object-cover"/>
+                           ) : (
+                             <div className="w-full h-full flex items-center justify-center text-gray-400">?</div>
+                           )}
+                        </div>
+                        <p className="text-center mt-2 font-medium truncate">{state.selectedAvatar?.name}</p>
+                    </div>
+                    
+                    <div className="text-gray-300">
+                        <Plus className="w-8 h-8" />
+                    </div>
+
+                    {/* Reference Preview */}
+                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                        <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Motion</p>
+                        <div className="aspect-square rounded-lg overflow-hidden relative bg-gray-100">
+                           {state.selectedReference?.thumbnail_url ? (
+                              <img src={state.selectedReference.thumbnail_url} className="w-full h-full object-cover"/>
+                           ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">?</div>
+                           )}
+                        </div>
+                        <p className="text-center mt-2 font-medium truncate">{state.selectedReference?.label}</p>
+                    </div>
+                 </div>
+                 <div className="flex justify-end pt-4 border-t">
+                    <button 
+                        onClick={startMotionGeneration}
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                        Start Generation
+                    </button>
+                 </div>
+               </div>
+            ) : state.isLoading && !state.motionTask?.motion_video_url ? (
                 <Loader type="pulse" text="Generating motion (this may take 1-10 mins)..." />
             ) : state.motionTask?.motion_video_url ? (
-                <div className="aspect-square w-full max-w-[300px] mx-auto bg-black rounded-lg overflow-hidden shadow-inner">
-                <video 
-                    src={state.motionTask.motion_video_url} 
-                    controls 
-                    className="w-full h-full object-contain"
-                    />
+                <div className="space-y-6">
+                    <div className="aspect-square w-full max-w-[300px] mx-auto bg-black rounded-lg overflow-hidden shadow-inner">
+                    <video 
+                        src={state.motionTask.motion_video_url} 
+                        controls 
+                        className="w-full h-full object-contain"
+                        />
+                    </div>
+                    <div className="flex justify-end pt-4 border-t">
+                        <button 
+                            onClick={() => setState(prev => ({ ...prev, currentStep: 'background', expandedStep: 'background' }))}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className="text-center text-gray-500 py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
@@ -414,7 +469,7 @@ function App() {
             onToggle={() => handleStepClick('background')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                   <button
                         onClick={() => setIsBgUploadModalOpen(true)}
                         className="aspect-[9/16] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
@@ -438,11 +493,11 @@ function App() {
                 </div>
                 <div className="flex justify-end pt-4 border-t">
                     <button 
-                        onClick={startMontageGeneration}
-                        disabled={!state.selectedBackground || state.isLoading}
-                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0"
+                        onClick={() => setState(prev => ({ ...prev, currentStep: 'montage_generation', expandedStep: 'montage_generation' }))}
+                        disabled={!state.selectedBackground}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Create Montage
+                        Next
                     </button>
                 </div>
             </div>
@@ -454,10 +509,46 @@ function App() {
             title="Final Result"
             isActive={state.expandedStep === 'result' || state.expandedStep === 'montage_generation'}
             isCompleted={state.montageTask?.status === 'ready'}
-            isDisabled={!state.montageTask && state.currentStep !== 'montage_generation'}
+            isDisabled={state.currentStep !== 'montage_generation' && state.currentStep !== 'result'}
             onToggle={() => handleStepClick('montage_generation')}
             >
-            {state.isLoading && !state.montageTask?.final_video_url ? (
+            {!state.montageTask && !state.isLoading ? (
+               <div className="space-y-6">
+                 <div className="flex flex-col sm:flex-row gap-8 items-center justify-center p-4">
+                    {/* Motion Preview */}
+                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                        <p className="text-sm text-center mb-3 font-medium text-gray-500">Generated Motion</p>
+                        <div className="aspect-square rounded-lg overflow-hidden bg-black">
+                           {state.motionTask?.motion_video_url && (
+                             <video src={state.motionTask.motion_video_url} className="w-full h-full object-cover" muted loop autoPlay playsInline/>
+                           )}
+                        </div>
+                    </div>
+                    
+                    <div className="text-gray-300">
+                        <Plus className="w-8 h-8" />
+                    </div>
+
+                    {/* Background Preview */}
+                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                        <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Background</p>
+                         <div className="aspect-[9/16] rounded-lg overflow-hidden bg-black">
+                           {state.selectedBackground?.video_url && (
+                              <video src={state.selectedBackground.video_url} className="w-full h-full object-cover" muted loop autoPlay playsInline/>
+                           )}
+                        </div>
+                    </div>
+                 </div>
+                 <div className="flex justify-end pt-4 border-t">
+                    <button 
+                         onClick={startMontageGeneration}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                        Start Montage
+                    </button>
+                 </div>
+               </div>
+            ) : state.isLoading && !state.montageTask?.final_video_url ? (
                 <div className="py-8">
                      <Loader type="progress" progress={state.montageTask ? 60 : 10} text="Rendering final masterpiece..." />
                 </div>

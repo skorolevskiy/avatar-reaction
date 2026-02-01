@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { CachedImage } from './CachedImage';
 
 interface CardProps {
   image?: string;
@@ -48,14 +49,16 @@ export function Card({ image, video, title, selected, onClick, aspect = 'aspect-
             muted
             playsInline
          />
-      ) : (
-        image && (
-          <img
+      ) : image ? (
+          <CachedImage
             src={image}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        )
+      ) : (
+          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+            <span className="text-gray-500 text-sm">No Preview</span>
+          </div>
       )}
       
       <div className="w-full flex items-center justify-between gap-2">
