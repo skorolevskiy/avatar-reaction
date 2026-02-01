@@ -392,7 +392,7 @@ function App() {
             >
             {!state.motionTask && !state.isLoading ? (
                <div className="space-y-6">
-                 <div className="flex flex-row gap-4 items-center justify-center p-4">
+                 <div className="flex flex-row gap-4 items-center justify-center">
                     {/* Avatar Preview */}
                     <div className="w-40">
                         <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Avatar</p>
@@ -515,7 +515,7 @@ function App() {
             >
             {!state.montageTask && !state.isLoading ? (
                <div className="space-y-6">
-                 <div className="flex flex-row gap-4 sm:gap-8 items-center justify-center p-4">
+                 <div className="flex flex-row gap-4 sm:gap-8 items-center justify-center">
                     {/* Motion Preview */}
                     <div className="w-40">
                         <p className="text-sm text-center mb-3 font-medium text-gray-500">Generated Motion</p>
