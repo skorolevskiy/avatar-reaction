@@ -392,9 +392,9 @@ function App() {
             >
             {!state.motionTask && !state.isLoading ? (
                <div className="space-y-6">
-                 <div className="flex flex-col sm:flex-row gap-8 items-center justify-center p-4">
+                 <div className="flex flex-row gap-4 items-center justify-center p-4">
                     {/* Avatar Preview */}
-                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                    <div className="w-40">
                         <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Avatar</p>
                         <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                            {state.selectedAvatar ? (
@@ -411,7 +411,7 @@ function App() {
                     </div>
 
                     {/* Reference Preview */}
-                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                    <div className="w-40">
                         <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Motion</p>
                         <div className="aspect-square rounded-lg overflow-hidden relative bg-gray-100">
                            {state.selectedReference?.thumbnail_url ? (
@@ -515,13 +515,15 @@ function App() {
             >
             {!state.montageTask && !state.isLoading ? (
                <div className="space-y-6">
-                 <div className="flex flex-col sm:flex-row gap-8 items-center justify-center p-4">
+                 <div className="flex flex-row gap-4 sm:gap-8 items-center justify-center p-4">
                     {/* Motion Preview */}
-                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                    <div className="w-40">
                         <p className="text-sm text-center mb-3 font-medium text-gray-500">Generated Motion</p>
                         <div className="aspect-square rounded-lg overflow-hidden bg-black">
-                           {state.motionTask?.motion_video_url && (
-                             <video src={state.motionTask.motion_video_url} className="w-full h-full object-cover" muted loop autoPlay playsInline/>
+                           {state.motionTask?.motion_thumbnail_url ? (
+                              <img src={state.motionTask.motion_thumbnail_url} className="w-full h-full object-cover"/>
+                           ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">?</div>
                            )}
                         </div>
                     </div>
@@ -531,11 +533,13 @@ function App() {
                     </div>
 
                     {/* Background Preview */}
-                    <div className="w-40 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                    <div className="w-40">
                         <p className="text-sm text-center mb-3 font-medium text-gray-500">Selected Background</p>
                          <div className="aspect-[9/16] rounded-lg overflow-hidden bg-black">
-                           {state.selectedBackground?.video_url && (
-                              <video src={state.selectedBackground.video_url} className="w-full h-full object-cover" muted loop autoPlay playsInline/>
+                           {state.selectedBackground?.thumbnail_url ? (
+                              <img src={state.selectedBackground.thumbnail_url} className="w-full h-full object-cover"/>
+                           ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">?</div>
                            )}
                         </div>
                     </div>
