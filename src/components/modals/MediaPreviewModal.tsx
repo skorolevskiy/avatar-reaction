@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { X, Download, ExternalLink } from 'lucide-react';
-import { twMerge } from 'tailwind-merge';
 
 interface MediaPreviewModalProps {
   isOpen: boolean;

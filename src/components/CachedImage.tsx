@@ -1,5 +1,5 @@
+import { useState } from 'react';
 import { useCachedImage } from '../hooks/useCachedImage';
-import { Loader } from './Loader';
 import { twMerge } from 'tailwind-merge';
 
 interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -7,7 +7,7 @@ interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export function CachedImage({ src, className, alt, ...props }: CachedImageProps) {
-  const { src: imageSrc, loading } = useCachedImage(src);
+  const { src: imageSrc } = useCachedImage(src);
   const [isError, setIsError] = useState(false);
 
   // If loading, we could show a skeleton or loader.
@@ -33,5 +33,3 @@ export function CachedImage({ src, className, alt, ...props }: CachedImageProps)
     </>
   );
 }
-
-import { useState } from 'react';

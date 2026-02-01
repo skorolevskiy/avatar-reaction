@@ -64,7 +64,7 @@ function App() {
   const mockData = () => {
       setAvatars([{ id: '1', name: 'Anna', image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop' }]);
       // Placeholder thumbnail added for testing UI
-      setReferences([{ id: '1', name: 'Wave', label: 'Wave Hello', duration: '5s', preview_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
+      setReferences([{ id: '1', name: 'Wave', label: 'Wave Hello', duration: '5s', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4', thumbnail_url: 'https://images.unsplash.com/photo-1518671815667-1c0eefdf7a61?w=400&h=400&fit=crop' }]); 
       setBackgrounds([{ id: '1', name: 'Office', title: 'Modern Office', duration: '15s', video_url: 'https://www.w3schools.com/html/mov_bbb.mp4' }]);
   };
 
@@ -484,6 +484,7 @@ function App() {
                       key={bg.id}
                       title={bg.title || bg.name}
                       video={bg.video_url}
+                      image={bg.thumbnail_url}
                       selected={state.selectedBackground?.id === bg.id}
                       aspect="aspect-[9/16]"
                       duration={bg.duration}
