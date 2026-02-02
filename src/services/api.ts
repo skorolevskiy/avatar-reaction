@@ -1,6 +1,6 @@
 import type { Avatar, Background, Montage, Motion, Reference } from '../types';
 
-const API_BASE = 'https://uniq.powercodeai.space/avatar';
+const API_BASE = 'https://reaction.powercodeai.space/avatar';
 
 const ENDPOINTS = {
   AVATARS: '/avatars',
