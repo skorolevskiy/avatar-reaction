@@ -303,7 +303,7 @@ function App() {
             onToggle={() => handleStepClick('avatar')}
             >
             {avatars.length === 0 ? <Loader type="spinner" /> : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 max-h-[40vh] overflow-y-auto pr-1">
                     <button
                         onClick={() => setIsUploadModalOpen(true)}
                         className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
@@ -346,7 +346,7 @@ function App() {
             onToggle={() => handleStepClick('reference')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 max-h-[44vh] overflow-y-auto pr-1">
                     <button
                         onClick={() => setIsRefUploadModalOpen(true)}
                         className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
@@ -469,7 +469,7 @@ function App() {
             onToggle={() => handleStepClick('background')}
             >
             <div className="space-y-6">
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 max-h-[40vh] overflow-y-auto pr-1">
                   <button
                         onClick={() => setIsBgUploadModalOpen(true)}
                         className="aspect-[9/16] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"

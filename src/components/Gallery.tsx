@@ -34,11 +34,13 @@ export function Gallery() {
         api.getBackgrounds(),
         api.getMontages()
       ]);
-      setAvatars(avatarsData);
-      setReferences(refsData);
-      setMotions(motionsData);
-      setBackgrounds(bgsData);
-      setMontages(montagesData);
+      
+      // Sort data from old to new (assuming API returns Newest First)
+      setAvatars(avatarsData.reverse());
+      setReferences(refsData.reverse());
+      setMotions(motionsData.reverse());
+      setBackgrounds(bgsData.reverse());
+      setMontages(montagesData.reverse());
     } catch (err) {
       console.error('Failed to load gallery data', err);
     } finally {
@@ -124,6 +126,7 @@ export function Gallery() {
                 key={item.id}
                 title={item.label || item.name}
                 image={item.thumbnail_url}
+                video={item.video_url}
                 selected={false}
                 onClick={() => setPreviewItem({
                   url: item.video_url,
@@ -146,6 +149,7 @@ export function Gallery() {
                     <Card
                         title={`Motion ${item.id.slice(0, 8)}`}
                         image={item.motion_thumbnail_url}
+                        video={item.motion_video_url}
                         selected={false}
                         aspect="aspect-square"
                         onClick={() => setPreviewItem({
@@ -170,6 +174,7 @@ export function Gallery() {
                 key={item.id}
                 title={item.title || item.name}
                 image={item.thumbnail_url}
+                video={item.video_url}
                 selected={false}
                 onClick={() => setPreviewItem({
                   url: item.video_url,
@@ -192,6 +197,7 @@ export function Gallery() {
                     <Card
                         title={`Montage ${item.id.slice(0, 8)}`}
                         image={item.final_thumbnail_url}
+                        video={item.final_video_url || item.video_url}
                         selected={false}
                         onClick={() => setPreviewItem({
                           url: item.final_video_url || item.video_url!,

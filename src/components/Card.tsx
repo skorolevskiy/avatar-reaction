@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { CachedImage } from './CachedImage';
 
@@ -14,6 +14,22 @@ interface CardProps {
 
 export function Card({ image, video, title, selected, onClick, aspect = 'aspect-[3/4]', duration }: CardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoDuration, setVideoDuration] = useState<string | undefined>(duration);
+
+  useEffect(() => {
+    setVideoDuration(duration);
+  }, [duration]);
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (!duration) {
+      const seconds = Math.round(e.currentTarget.duration);
+      if (!isNaN(seconds) && seconds !== Infinity) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        setVideoDuration(`${mins}:${secs.toString().padStart(2, '0')}`);
+      }
+    }
+  };
 
   const handleMouseEnter = () => {
     if (videoRef.current) {
@@ -48,6 +64,8 @@ export function Card({ image, video, title, selected, onClick, aspect = 'aspect-
             loop
             muted
             playsInline
+            preload="metadata"
+            onLoadedMetadata={handleLoadedMetadata}
          />
       ) : image ? (
           <CachedImage
@@ -61,20 +79,18 @@ export function Card({ image, video, title, selected, onClick, aspect = 'aspect-
           </div>
       )}
       
-      <div className="w-full flex items-center justify-between gap-2">
-            <p className="text-white font-medium truncate">{title}</p>
-            {duration && (
-                <span className="text-xs text-white/90 bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm whitespace-nowrap">
-                    {duration}
-                </span>
-            )}
+      {videoDuration && (
+        <div className="absolute top-2 right-2 z-20 bg-black/60 text-white text-[14px] font-medium px-1.5 py-0.5 rounded-md backdrop-blur-sm pointer-events-none shadow-sm">
+          {videoDuration}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+      )}
+      
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
         <p className="text-white font-medium truncate w-full">{title}</p>
       </div>
 
       {selected && (
-        <div className="absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full shadow-sm">
+        <div className="absolute top-2 left-2 bg-blue-500 text-white p-1 rounded-full shadow-sm z-20">
            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
            </svg>
