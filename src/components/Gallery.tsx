@@ -3,14 +3,16 @@ import { api } from '../services/api';
 import type { Avatar, Reference, Motion, Background, Montage } from '../types';
 import { Card } from './Card';
 import { Loader } from './Loader';
-import { RefreshCw, Play, Video, ImageIcon, Layers, FileVideo } from 'lucide-react';
+import { RefreshCw, Play, Video, ImageIcon, Layers, FileVideo, ChevronDown } from 'lucide-react';
 import { MediaPreviewModal } from './modals/MediaPreviewModal';
 
 type Tab = 'avatars' | 'references' | 'motions' | 'backgrounds' | 'montages';
+const ITEMS_PER_PAGE = 12;
 
 export function Gallery() {
   const [activeTab, setActiveTab] = useState<Tab>('avatars');
   const [isLoading, setIsLoading] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [references, setReferences] = useState<Reference[]>([]);
@@ -35,12 +37,11 @@ export function Gallery() {
         api.getMontages()
       ]);
       
-      // Sort data from old to new (assuming API returns Newest First)
-      setAvatars(avatarsData.reverse());
-      setReferences(refsData.reverse());
-      setMotions(motionsData.reverse());
-      setBackgrounds(bgsData.reverse());
-      setMontages(montagesData.reverse());
+      setAvatars(avatarsData);
+      setReferences(refsData);
+      setMotions(motionsData);
+      setBackgrounds(bgsData);
+      setMontages(montagesData);
     } catch (err) {
       console.error('Failed to load gallery data', err);
     } finally {
@@ -52,6 +53,10 @@ export function Gallery() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [activeTab]);
+
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'avatars', label: 'Аватары', icon: <ImageIcon className="w-4 h-4" /> },
     { id: 'references', label: 'Референсы', icon: <Play className="w-4 h-4" /> },
@@ -59,6 +64,17 @@ export function Gallery() {
     { id: 'backgrounds', label: 'Бэкграунды', icon: <Layers className="w-4 h-4" /> },
     { id: 'montages', label: 'Финальный монтаж', icon: <FileVideo className="w-4 h-4" /> },
   ];
+
+  const getActiveListLength = () => {
+    switch (activeTab) {
+      case 'avatars': return avatars.length;
+      case 'references': return references.length;
+      case 'motions': return motions.length;
+      case 'backgrounds': return backgrounds.length;
+      case 'montages': return montages.length;
+      default: return 0;
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -101,7 +117,7 @@ export function Gallery() {
         
         {!isLoading && activeTab === 'avatars' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {avatars.map((item) => (
+            {avatars.slice(0, visibleCount).map((item) => (
               <Card
                 key={item.id}
                 title={item.name}
@@ -121,7 +137,7 @@ export function Gallery() {
 
         {!isLoading && activeTab === 'references' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {references.map((item) => (
+            {references.slice(0, visibleCount).map((item) => (
               <Card
                 key={item.id}
                 title={item.label || item.name}
@@ -143,7 +159,7 @@ export function Gallery() {
 
         {!isLoading && activeTab === 'motions' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {motions.map((item) => (
+            {motions.slice(0, visibleCount).map((item) => (
               <div key={item.id}>
                  {item.status === 'success' && item.motion_video_url ? (
                     <Card
@@ -169,7 +185,7 @@ export function Gallery() {
 
         {!isLoading && activeTab === 'backgrounds' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {backgrounds.map((item) => (
+            {backgrounds.slice(0, visibleCount).map((item) => (
               <Card
                 key={item.id}
                 title={item.title || item.name}
@@ -191,7 +207,7 @@ export function Gallery() {
 
         {!isLoading && activeTab === 'montages' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {montages.map((item) => (
+            {montages.slice(0, visibleCount).map((item) => (
                <div key={item.id}>
                 {(item.status === 'ready' || item.status === 'success' as any) && (item.final_video_url || item.video_url) ? (
                     <Card
@@ -212,6 +228,18 @@ export function Gallery() {
               </div>
             ))}
             {montages.length === 0 && <EmptyState />}
+          </div>
+        )}
+
+        {!isLoading && getActiveListLength() > visibleCount && (
+          <div className="flex justify-center mt-6 py-2">
+            <button
+              onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}
+              className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-sm"
+            >
+              <ChevronDown className="w-4 h-4" />
+              Загрузить еще ({getActiveListLength() - visibleCount})
+            </button>
           </div>
         )}
       </div>
