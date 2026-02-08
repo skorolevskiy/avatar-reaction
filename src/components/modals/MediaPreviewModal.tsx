@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X, Download, ExternalLink } from 'lucide-react';
+import { X, Download, ExternalLink, Trash2 } from 'lucide-react';
 
 interface MediaPreviewModalProps {
   isOpen: boolean;
@@ -7,9 +7,11 @@ interface MediaPreviewModalProps {
   url: string;
   type: 'image' | 'video';
   title: string;
+  onDelete?: () => void;
+  id?: string;
 }
 
-export function MediaPreviewModal({ isOpen, onClose, url, type, title }: MediaPreviewModalProps) {
+export function MediaPreviewModal({ isOpen, onClose, url, type, title, onDelete }: MediaPreviewModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -111,6 +113,19 @@ export function MediaPreviewModal({ isOpen, onClose, url, type, title }: MediaPr
                 <ExternalLink className="w-4 h-4" />
                 Открыть в новой вкладке
             </a>
+            {onDelete && (
+                <button
+                    onClick={() => {
+                        if (window.confirm('Вы уверены, что хотите удалить этот файл?')) {
+                            onDelete();
+                        }
+                    }}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-red-500/80 text-white rounded-full hover:bg-red-600/90 font-medium transition-colors shadow-lg backdrop-blur-sm"
+                >
+                    <Trash2 className="w-4 h-4" />
+                    Удалить
+                </button>
+            )}
         </div>
       </div>
     </div>

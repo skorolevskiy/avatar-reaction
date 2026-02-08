@@ -30,6 +30,13 @@ export const api = {
     return res.json();
   },
 
+  deleteAvatar: async (id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}${ENDPOINTS.AVATARS}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to delete avatar');
+  },
+
   getReferences: async (): Promise<Reference[]> => {
     const res = await fetch(`${API_BASE}${ENDPOINTS.REFERENCES}`);
     if (!res.ok) throw new Error('Failed to fetch references');
@@ -48,6 +55,13 @@ export const api = {
     
     if (!res.ok) throw new Error('Failed to upload reference');
     return res.json();
+  },
+
+  deleteReference: async (id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}${ENDPOINTS.REFERENCES}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to delete reference');
   },
 
   getBackgrounds: async (): Promise<Background[]> => {
@@ -70,6 +84,13 @@ export const api = {
     return res.json();
   },
 
+  deleteBackground: async (id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}${ENDPOINTS.BACKGROUNDS}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to delete background');
+  },
+
   getMotions: async (): Promise<Motion[]> => {
     const res = await fetch(`${API_BASE}${ENDPOINTS.MOTIONS}`);
     if (!res.ok) throw new Error('Failed to fetch motions');
@@ -85,7 +106,14 @@ export const api = {
     if (!res.ok) throw new Error('Failed to create motion task');
     return res.json();
   },
+deleteMotion: async (id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}${ENDPOINTS.MOTIONS}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to delete motion');
+  },
 
+  
   getMotionStatus: async (id: string): Promise<Motion> => {
     const res = await fetch(`${API_BASE}${ENDPOINTS.MOTIONS}/${id}`);
     if (!res.ok) throw new Error('Failed to get motion status');
@@ -106,6 +134,13 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to create montage task');
     return res.json();
+  },
+
+  deleteMontage: async (id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}${ENDPOINTS.MONTAGES}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to delete montage');
   },
 
   getMontageStatus: async (id: string): Promise<Montage> => {

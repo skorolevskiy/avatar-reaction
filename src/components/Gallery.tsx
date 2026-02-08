@@ -3,8 +3,11 @@ import { api } from '../services/api';
 import type { Avatar, Reference, Motion, Background, Montage } from '../types';
 import { Card } from './Card';
 import { Loader } from './Loader';
-import { RefreshCw, Play, Video, ImageIcon, Layers, FileVideo, ChevronDown } from 'lucide-react';
+import { RefreshCw, Play, Video, ImageIcon, Layers, FileVideo, ChevronDown, Plus } from 'lucide-react';
 import { MediaPreviewModal } from './modals/MediaPreviewModal';
+import { AvatarUploadModal } from './modals/AvatarUploadModal';
+import { ReferenceUploadModal } from './modals/ReferenceUploadModal';
+import { BackgroundUploadModal } from './modals/BackgroundUploadModal';
 
 type Tab = 'avatars' | 'references' | 'motions' | 'backgrounds' | 'montages';
 const ITEMS_PER_PAGE = 12;
@@ -12,7 +15,8 @@ const ITEMS_PER_PAGE = 12;
 export function Gallery() {
   const [activeTab, setActiveTab] = useState<Tab>('avatars');
   const [isLoading, setIsLoading] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  // Avatars tab has an add button, so we start with 11 items
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE - 1);
   
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [references, setReferences] = useState<Reference[]>([]);
@@ -20,7 +24,12 @@ export function Gallery() {
   const [backgrounds, setBackgrounds] = useState<Background[]>([]);
   const [montages, setMontages] = useState<Montage[]>([]);
 
+  const [isAvatarUploadOpen, setIsAvatarUploadOpen] = useState(false);
+  const [isRefUploadOpen, setIsRefUploadOpen] = useState(false);
+  const [isBgUploadOpen, setIsBgUploadOpen] = useState(false);
+
   const [previewItem, setPreviewItem] = useState<{
+    id?: string;
     url: string;
     type: 'image' | 'video';
     title: string;
@@ -54,8 +63,56 @@ export function Gallery() {
   }, []);
 
   useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE);
+    const hasAddButton = ['avatars', 'references', 'backgrounds'].includes(activeTab);
+    setVisibleCount(hasAddButton ? ITEMS_PER_PAGE - 1 : ITEMS_PER_PAGE);
   }, [activeTab]);
+
+  const handleAvatarUpload = async (file: File) => {
+    await api.uploadAvatar(file);
+    await loadData();
+    setIsAvatarUploadOpen(false);
+  };
+
+  const handleReferenceUpload = async (file: File, label: string) => {
+    await api.uploadReference(file, label);
+    await loadData();
+    setIsRefUploadOpen(false);
+  };
+
+  const handleBackgroundUpload = async (file: File, title: string) => {
+    await api.uploadBackground(file, title);
+    await loadData();
+    setIsBgUploadOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!previewItem?.id) return;
+    
+    try {
+        switch (activeTab) {
+            case 'avatars':
+                await api.deleteAvatar(previewItem.id);
+                break;
+            case 'references':
+                await api.deleteReference(previewItem.id);
+                break;
+            case 'backgrounds':
+                await api.deleteBackground(previewItem.id);
+                break;
+            case 'motions':
+                await api.deleteMotion(previewItem.id);
+                break;
+            case 'montages':
+                await api.deleteMontage(previewItem.id);
+                break;
+        }
+        setPreviewItem(null);
+        await loadData();
+    } catch (error) {
+        console.error('Failed to delete item:', error);
+        alert('Не удалось удалить файл');
+    }
+  };
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'avatars', label: 'Аватары', icon: <ImageIcon className="w-4 h-4" /> },
@@ -117,6 +174,15 @@ export function Gallery() {
         
         {!isLoading && activeTab === 'avatars' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <button
+                onClick={() => setIsAvatarUploadOpen(true)}
+                className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+            >
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Plus className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Добавить</span>
+            </button>
             {avatars.slice(0, visibleCount).map((item) => (
               <Card
                 key={item.id}
@@ -125,6 +191,7 @@ export function Gallery() {
                 selected={false}
                 aspect='aspect-square'
                 onClick={() => setPreviewItem({
+                  id: item.id,
                   url: item.image_url,
                   type: 'image',
                   title: item.name
@@ -137,6 +204,15 @@ export function Gallery() {
 
         {!isLoading && activeTab === 'references' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <button
+                onClick={() => setIsRefUploadOpen(true)}
+                className="aspect-square flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+            >
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Plus className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Добавить</span>
+            </button>
             {references.slice(0, visibleCount).map((item) => (
               <Card
                 key={item.id}
@@ -145,6 +221,7 @@ export function Gallery() {
                 video={item.video_url}
                 selected={false}
                 onClick={() => setPreviewItem({
+                  id: item.id,
                   url: item.video_url,
                   type: 'video',
                   title: item.label || item.name
@@ -169,6 +246,7 @@ export function Gallery() {
                         selected={false}
                         aspect="aspect-square"
                         onClick={() => setPreviewItem({
+                          id: item.id,
                           url: item.motion_video_url!,
                           type: 'video',
                           title: `Motion ${item.id.slice(0, 8)}`
@@ -185,6 +263,15 @@ export function Gallery() {
 
         {!isLoading && activeTab === 'backgrounds' && (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <button
+                onClick={() => setIsBgUploadOpen(true)}
+                className="aspect-[9/16] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+            >
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Plus className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600">Добавить</span>
+            </button>
             {backgrounds.slice(0, visibleCount).map((item) => (
               <Card
                 key={item.id}
@@ -193,6 +280,7 @@ export function Gallery() {
                 video={item.video_url}
                 selected={false}
                 onClick={() => setPreviewItem({
+                  id: item.id,
                   url: item.video_url,
                   type: 'video',
                   title: item.title || item.name
@@ -216,6 +304,7 @@ export function Gallery() {
                         video={item.final_video_url || item.video_url}
                         selected={false}
                         onClick={() => setPreviewItem({
+                          id: item.id,
                           url: item.final_video_url || item.video_url!,
                           type: 'video',
                           title: `Montage ${item.id.slice(0, 8)}`
@@ -246,11 +335,28 @@ export function Gallery() {
 
       {previewItem && (
         <MediaPreviewModal
+          onDelete={handleDelete}
           isOpen={!!previewItem}
           onClose={() => setPreviewItem(null)}
           {...previewItem}
         />
       )}
+
+      <AvatarUploadModal
+        isOpen={isAvatarUploadOpen}
+        onClose={() => setIsAvatarUploadOpen(false)}
+        onUpload={handleAvatarUpload}
+      />
+      <ReferenceUploadModal
+        isOpen={isRefUploadOpen}
+        onClose={() => setIsRefUploadOpen(false)}
+        onUpload={handleReferenceUpload}
+      />
+      <BackgroundUploadModal
+        isOpen={isBgUploadOpen}
+        onClose={() => setIsBgUploadOpen(false)}
+        onUpload={handleBackgroundUpload}
+      />
     </div>
   );
 }
