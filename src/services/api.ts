@@ -1,4 +1,4 @@
-import type { Avatar, Background, Montage, Motion, Reference } from '../types';
+import type { Avatar, Background, Montage, Motion, Reference, MontageSettings } from '../types';
 
 const API_BASE = 'https://reaction.powercodeai.space/avatar';
 
@@ -126,11 +126,11 @@ deleteMotion: async (id: string): Promise<void> => {
     return res.json();
   },
 
-  createMontage: async (motionId: string, bgVideoId: string): Promise<Montage> => {
+  createMontage: async (motionId: string, bgVideoId: string, settings?: MontageSettings): Promise<Montage> => {
     const res = await fetch(`${API_BASE}${ENDPOINTS.MONTAGES}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ motion_id: motionId, bg_video_id: bgVideoId }),
+      body: JSON.stringify({ motion_id: motionId, bg_video_id: bgVideoId, settings }),
     });
     if (!res.ok) throw new Error('Failed to create montage task');
     return res.json();

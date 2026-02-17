@@ -32,6 +32,10 @@ export interface Background {
   thumbnail_url?: string;
 }
 
+export type MontageSettings = 
+  | { format: 'circle'; position: 'top_right' | 'top_left' | 'bottom_right' | 'bottom_left' }
+  | { format: 'square'; position: 'top' | 'bottom' };
+
 export interface Montage {
   id: string;
   status: 'queued' | 'processing' | 'ready' | 'failed';
@@ -42,7 +46,7 @@ export interface Montage {
   bg_video_id: string;
 }
 
-export type Step = 'avatar' | 'reference' | 'motion_generation' | 'background' | 'montage_generation' | 'result';
+export type Step = 'mode_selection' | 'avatar' | 'reference' | 'motion_generation' | 'background' | 'montage_generation' | 'result';
 
 export interface AppState {
   currentStep: Step;
