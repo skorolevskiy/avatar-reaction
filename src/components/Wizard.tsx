@@ -747,6 +747,14 @@ export function Wizard({ onReset }: WizardProps) {
                         Share
                     </button>
                     </div>
+                    <div className="flex justify-center pt-4">
+                        <button
+                            onClick={onReset}
+                            className="text-gray-500 hover:text-gray-700 font-medium text-sm underline decoration-dotted underline-offset-4"
+                        >
+                            Create Another Reaction
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className="text-center text-gray-500 py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
