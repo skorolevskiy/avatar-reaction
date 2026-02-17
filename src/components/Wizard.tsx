@@ -18,7 +18,11 @@ import { AvatarUploadModal } from './modals/AvatarUploadModal';
 import { ReferenceUploadModal } from './modals/ReferenceUploadModal';
 import { BackgroundUploadModal } from './modals/BackgroundUploadModal';
 
-export function Wizard() {
+interface WizardProps {
+  onReset?: () => void;
+}
+
+export function Wizard({ onReset }: WizardProps) {
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [references, setReferences] = useState<Reference[]>([]);
   const [backgrounds, setBackgrounds] = useState<Background[]>([]);
@@ -606,7 +610,7 @@ export function Wizard() {
                                     Circle
                                 </button>
                                 <button 
-                                    onClick={() => setMontageSettings({ format: 'square', position: 'bottom_right' })}
+                                    onClick={() => setMontageSettings({ format: 'square', position: 'bottom' })}
                                     className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${montageSettings.format === 'square' ? 'bg-white shadow text-blue-700' : 'text-gray-600 hover:text-gray-900'}`}
                                 >
                                     Square
