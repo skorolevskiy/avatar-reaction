@@ -6,7 +6,7 @@ import { Loader } from '../Loader';
 interface BackgroundUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (file: File, title: string) => Promise<void>;
+  onUpload: (files: File[], title: string) => Promise<void>;
 }
 
 export const BackgroundUploadModal: React.FC<BackgroundUploadModalProps> = ({ 
@@ -19,13 +19,16 @@ export const BackgroundUploadModal: React.FC<BackgroundUploadModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
-    if (file.type !== 'video/mp4') {
-      alert('Please select an MP4 video.');
-      return;
+    const validFiles = files.filter(file => file.type === 'video/mp4');
+
+    if (validFiles.length !== files.length) {
+      alert('Some files were ignored. Please select only MP4 videos.');
     }
+
+    if (validFiles.length === 0) return;
 
     if (!title.trim()) {
       alert('Please enter a title first.');
@@ -34,7 +37,7 @@ export const BackgroundUploadModal: React.FC<BackgroundUploadModalProps> = ({
 
     setIsUploading(true);
     try {
-      await onUpload(file, title);
+      await onUpload(validFiles, title);
       setTitle('');
     } catch (error) {
       console.error(error);
@@ -87,13 +90,14 @@ export const BackgroundUploadModal: React.FC<BackgroundUploadModalProps> = ({
                 <Upload className="w-6 h-6" />
               </div>
               <div className="text-center">
-                <p className="font-medium text-gray-900">Click to upload video</p>
+                <p className="font-medium text-gray-900">Click to upload videos</p>
                 <p className="text-sm text-gray-500">MP4 (max 100MB)</p>
               </div>
               <input 
                 ref={fileInputRef}
                 type="file" 
                 accept=".mp4" 
+                multiple
                 className="hidden" 
                 onChange={handleFileChange}
                 disabled={!title.trim()}

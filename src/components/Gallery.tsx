@@ -67,20 +67,20 @@ export function Gallery() {
     setVisibleCount(hasAddButton ? ITEMS_PER_PAGE - 1 : ITEMS_PER_PAGE);
   }, [activeTab]);
 
-  const handleAvatarUpload = async (file: File) => {
-    await api.uploadAvatar(file);
+  const handleAvatarUpload = async (files: File[]) => {
+    await api.uploadAvatar(files);
     await loadData();
     setIsAvatarUploadOpen(false);
   };
 
-  const handleReferenceUpload = async (file: File, label: string) => {
-    await api.uploadReference(file, label);
+  const handleReferenceUpload = async (files: File[], label: string) => {
+    await api.uploadReference(files, label);
     await loadData();
     setIsRefUploadOpen(false);
   };
 
-  const handleBackgroundUpload = async (file: File, title: string) => {
-    await api.uploadBackground(file, title);
+  const handleBackgroundUpload = async (files: File[], title: string) => {
+    await api.uploadBackground(files, title);
     await loadData();
     setIsBgUploadOpen(false);
   };

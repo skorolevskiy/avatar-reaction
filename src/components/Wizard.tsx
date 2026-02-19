@@ -112,33 +112,35 @@ export function Wizard({ onReset }: WizardProps) {
     }
   };
 
-  const handleAvatarUpload = async (file: File) => {
+  const handleAvatarUpload = async (files: File[]) => {
     try {
-      const newAvatar: Avatar = await api.uploadAvatar(file);
-      setAvatars(prev => [newAvatar, ...prev]);
+      const newAvatars = await api.uploadAvatar(files);
+      setAvatars(prev => [...newAvatars, ...prev]);
       setIsUploadModalOpen(false);
-      selectAvatar(newAvatar);
-    } catch (err) {
+      if (newAvatars.length > 0) {
+        selectAvatar(newAvatars[0]);
+      }
+    } catch {
       handleError('Failed to upload avatar');
     }
   };
 
-  const handleReferenceUpload = async (file: File, label: string) => {
+  const handleReferenceUpload = async (files: File[], label: string) => {
     try {
-      const newRef: Reference = await api.uploadReference(file, label);
-      setReferences(prev => [newRef, ...prev]);
+      const newRefs = await api.uploadReference(files, label);
+      setReferences(prev => [...newRefs, ...prev]);
       setIsRefUploadModalOpen(false);
-    } catch (err) {
+    } catch {
       handleError('Failed to upload reference video');
     }
   };
 
-  const handleBackgroundUpload = async (file: File, title: string) => {
+  const handleBackgroundUpload = async (files: File[], title: string) => {
     try {
-      const newBg: Background = await api.uploadBackground(file, title);
-      setBackgrounds(prev => [newBg, ...prev]);
+      const newBgs = await api.uploadBackground(files, title);
+      setBackgrounds(prev => [...newBgs, ...prev]);
       setIsBgUploadModalOpen(false);
-    } catch (err) {
+    } catch {
       handleError('Failed to upload background video');
     }
   };

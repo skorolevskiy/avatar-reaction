@@ -17,9 +17,11 @@ export const api = {
     return res.json();
   },
 
-  uploadAvatar: async (file: File): Promise<Avatar> => {
+  uploadAvatar: async (files: File[]): Promise<Avatar[]> => {
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
     
     const res = await fetch(`${API_BASE}${ENDPOINTS.AVATARS}`, {
       method: 'POST',
@@ -43,9 +45,11 @@ export const api = {
     return res.json();
   },
 
-  uploadReference: async (file: File, label: string): Promise<Reference> => {
+  uploadReference: async (files: File[], label: string): Promise<Reference[]> => {
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
     formData.append('label', label);
     
     const res = await fetch(`${API_BASE}${ENDPOINTS.REFERENCES}`, {
@@ -70,9 +74,11 @@ export const api = {
     return res.json();
   },
 
-  uploadBackground: async (file: File, title: string): Promise<Background> => {
+  uploadBackground: async (files: File[], title: string): Promise<Background[]> => {
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
     formData.append('title', title);
     
     const res = await fetch(`${API_BASE}${ENDPOINTS.BACKGROUNDS}`, {

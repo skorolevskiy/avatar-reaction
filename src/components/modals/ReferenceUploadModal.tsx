@@ -6,7 +6,7 @@ import { Loader } from '../Loader';
 interface ReferenceUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (file: File, label: string) => Promise<void>;
+  onUpload: (files: File[], label: string) => Promise<void>;
 }
 
 export const ReferenceUploadModal: React.FC<ReferenceUploadModalProps> = ({ 
@@ -19,13 +19,16 @@ export const ReferenceUploadModal: React.FC<ReferenceUploadModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
-    if (file.type !== 'video/mp4') {
-      alert('Please select an MP4 video.');
-      return;
+    const validFiles = files.filter(file => file.type === 'video/mp4');
+
+    if (validFiles.length !== files.length) {
+      alert('Some files were ignored. Please select only MP4 videos.');
     }
+
+    if (validFiles.length === 0) return;
 
     if (!label.trim()) {
       alert('Please enter a label first.');
@@ -34,7 +37,7 @@ export const ReferenceUploadModal: React.FC<ReferenceUploadModalProps> = ({
 
     setIsUploading(true);
     try {
-      await onUpload(file, label);
+      await onUpload(validFiles, label);
       setLabel(''); // Reset label on success
     } catch (error) {
       console.error(error);
@@ -87,13 +90,14 @@ export const ReferenceUploadModal: React.FC<ReferenceUploadModalProps> = ({
                 <Upload className="w-6 h-6" />
               </div>
               <div className="text-center">
-                <p className="font-medium text-gray-900">Click to upload video</p>
+                <p className="font-medium text-gray-900">Click to upload videos</p>
                 <p className="text-sm text-gray-500">MP4 (max 100MB)</p>
               </div>
               <input 
                 ref={fileInputRef}
                 type="file" 
                 accept=".mp4" 
+                multiple
                 className="hidden" 
                 onChange={handleFileChange}
                 disabled={!label.trim()}

@@ -6,7 +6,7 @@ import { Loader } from '../Loader';
 interface AvatarUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (file: File) => Promise<void>;
+  onUpload: (files: File[]) => Promise<void>;
 }
 
 export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({ 
@@ -18,17 +18,20 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      alert('Please select a PNG or JPG image.'); // Simple alert for now, or pass onError prop
-      return;
+    const validFiles = files.filter(file => ['image/jpeg', 'image/png'].includes(file.type));
+
+    if (validFiles.length !== files.length) {
+      alert('Some files were ignored. Please select only PNG or JPG images.');
     }
+
+    if (validFiles.length === 0) return;
 
     setIsUploading(true);
     try {
-      await onUpload(file);
+      await onUpload(validFiles);
       // Close is handled by parent usually, but we can ensure local state is reset
     } catch (error) {
       console.error(error);
@@ -71,6 +74,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                 ref={fileInputRef}
                 type="file" 
                 accept=".jpg,.jpeg,.png" 
+                multiple
                 className="hidden" 
                 onChange={handleFileChange}
               />
